@@ -30,12 +30,16 @@
 #include "pch.h"
 #include <iostream>
 #include "conio.h"
+#include <time.h>
 
 #pragma once
 #include <iostream>
 
 int main()
 {
+	double time_spent = 0.0;
+	clock_t begin = clock();
+
 	bool catchRegression = true;
 	bool result = true;
 	if (catchRegression)
@@ -55,10 +59,15 @@ int main()
 		else
 			PRINTMSG << "\n !!! REGRESSION !!!\n";
 
-		return result;
 	}
 	else
-		return TestInput5_2000();
+		result = TestInput5_2000();
+
+	clock_t end = clock();
+
+	time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+	PRINT << "Time elpased is : " << time_spent << "seconds";
+	return result;
 }
 
 
