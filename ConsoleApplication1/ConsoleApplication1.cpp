@@ -403,7 +403,7 @@ bool UpdateBoxAttrNumerals(GLOBALS* g)
 						if (ARRAY2D(g->boxattr, boxrow, col, g->Game_Size).count != 1)
 						{
 							BOX_ATTR *modifyBox = &ARRAY2D(g->boxattr, boxrow, col, g->Game_Size);
-							modified = RemoveNumeralFromPossibleList(modifyBox, currNumeral);
+							modified |= RemoveNumeralFromPossibleList(modifyBox, currNumeral);
 							if (modifyBox->count == 1) {
 								UpdateNumeralsInputArray(g, boxrow, col);
 								UpdateBoxAttrNumeralsAgain = true;
@@ -419,7 +419,7 @@ bool UpdateBoxAttrNumerals(GLOBALS* g)
 						if (ARRAY2D(g->boxattr, row, boxcol, g->Game_Size).count != 1)
 						{
 							BOX_ATTR *modifyBox = &ARRAY2D(g->boxattr, row, boxcol, g->Game_Size);
-							modified = RemoveNumeralFromPossibleList(modifyBox, currNumeral);
+							modified |= RemoveNumeralFromPossibleList(modifyBox, currNumeral);
 							if (modifyBox->count == 1) {
 								UpdateNumeralsInputArray(g, row, boxcol);
 								UpdateBoxAttrNumeralsAgain = true;
@@ -437,12 +437,6 @@ bool UpdateBoxAttrNumerals(GLOBALS* g)
 		UpdateBoxAttrNumerals(g);
 	}
 	
-	if (!modified)
-	{
-		PRINTMSG << "FORCE_PRINT\n";
-		PrintBoxAttrFormatted(g, true);
-	}
-
 	if (!modified) PRINTMSG << "NOT Modified\n";
 	return modified;
 }
