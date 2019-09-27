@@ -32,6 +32,7 @@
 typedef struct {
 	int *box_possible;
 	int count;
+	bool boxAttrUpdated;
 }BOX_ATTR;
 
 typedef struct {
@@ -59,6 +60,8 @@ typedef struct {
 
 typedef struct {
 	int* Numeral_Inputs;
+	int* RowSolvedCount;
+	int* ColSolvedCount;
 	BOX_ATTR *boxattr;
 	BOX_RELATIONS *betweenRows, *betweenColumns;
 	int Game_Size;

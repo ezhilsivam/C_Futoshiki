@@ -40,7 +40,7 @@ int main()
 	double time_spent = 0.0;
 	clock_t begin = clock();
 
-	bool catchRegression = true;
+	bool catchRegression = false;
 	bool result = true;
 	if (catchRegression)
 	{
@@ -88,6 +88,12 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 		g.Numeral_Inputs = (int*)malloc(Total_Boxes * sizeof(int));
 		memset(g.Numeral_Inputs, 0, Total_Boxes * sizeof(int));
 
+		g.RowSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
+		memset(g.RowSolvedCount, 0, g.Game_Size * sizeof(int));
+
+		g.ColSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
+		memset(g.ColSolvedCount, 0, g.Game_Size * sizeof(int));
+
 		for (int row = 0; row < g.Game_Size; row++) {
 			PRINTMSG << "Input Numerals {Row:" << row + 1 << "}";
 			for (int col = 0; col < g.Game_Size; col++) {
@@ -104,6 +110,12 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 		g.Numeral_Inputs = Numeral_Input_fromOutside;
 		g.Game_Size = Test_game_size;
 		Total_Boxes = g.Game_Size * g.Game_Size;
+
+		g.RowSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
+		memset(g.RowSolvedCount, 0, g.Game_Size * sizeof(int));
+
+		g.ColSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
+		memset(g.ColSolvedCount, 0, g.Game_Size * sizeof(int));
 	}
 	CHECK_USER_INPUT_ERROR;
 
@@ -396,7 +408,8 @@ bool UpdateBoxAttrNumerals(GLOBALS* g)
 	for (int row = 0; row < g->Game_Size; row++) {
 		for (int col = 0; col < g->Game_Size; col++) {
 			int currNumeral = ARRAY2D(g->Numeral_Inputs, row, col, g->Game_Size);
-			if (currNumeral != 0) {
+			if (currNumeral != 0 && !ARRAY2D(g->boxattr, row, col, g->Game_Size).boxAttrUpdated)
+			{
 				// Iterate through the box attr Col and remove currNumeral from other boxes
 				for (int boxrow = 0; boxrow < g->Game_Size; boxrow++) {
 					if (boxrow != row) {
@@ -428,7 +441,13 @@ bool UpdateBoxAttrNumerals(GLOBALS* g)
 						//else PRINT << "ERROR Iterating through boxattr row" << row << col << "\n";
 					}
 				}
+				ARRAY2D(g->boxattr, row, col, g->Game_Size).boxAttrUpdated = true;
+				
+				g->RowSolvedCount[row]++;
+				g->ColSolvedCount[col]++;
+
 			}
+			
 		}
 	}
 	//return UpdateBoxAttrNumeralsAgain;
