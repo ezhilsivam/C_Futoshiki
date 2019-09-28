@@ -20,6 +20,7 @@ bool TestInput5x5()
 							   '.', '.', '.', '.', '.',
 							   '.', '.', '.', '.', '.',
 							   '.', '.', '.', '.', '.' };
+
 	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 5);
 }
 

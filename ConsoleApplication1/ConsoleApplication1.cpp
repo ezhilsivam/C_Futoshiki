@@ -44,6 +44,8 @@ int main()
 	bool result = true;
 	if (catchRegression)
 	{
+		result &= TestInput4_1();
+
 		result &= TestInput5_1(); // SOLVED
 		result &= TestInput5_2(); // SOLVED
 		result &= TestInput5_3(); // SOLVED
@@ -53,6 +55,8 @@ int main()
 		result &= TestInput5_7(); // SOLVED
 		result &= TestInput5_8(); // SOLVED
 		result &= TestInput5_9(); // SOLVED
+
+		result &= TestInput7_1(); 
 		
 		if (result)
 			PRINTMSG << "\nALL PASS\n";
@@ -61,7 +65,11 @@ int main()
 
 	}
 	else
-		result = TestInput5_2000();
+		result = TestInput8_1();
+
+	// NOT SOLVED
+	//result = TestInput5_2000();
+	//result = TestInput6_1();
 
 	clock_t end = clock();
 
