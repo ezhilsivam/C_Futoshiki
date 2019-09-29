@@ -35,6 +35,94 @@
 #pragma once
 #include <iostream>
 
+bool CatchRegression4x4()
+{
+	bool result = true;
+	result &= TestInput4_1();
+	result &= TestInput4_2();
+	result &= TestInput4_3();
+	result &= TestInput4_4();
+	result &= TestInput4_5();
+	result &= TestInput4_6();
+	result &= TestInput4_7();
+	result &= TestInput4_8();
+	result &= TestInput4_9();
+	result &= TestInput4_10();
+
+	if (!result) PRINTMSG << "Regression";
+	return result;
+}
+
+bool CatchRegression5x5()
+{
+	bool result = true;
+	result &= TestInput5_1(); // SOLVED
+	result &= TestInput5_2(); // SOLVED
+	result &= TestInput5_3(); // SOLVED
+	result &= TestInput5_4(); // SOLVED
+	result &= TestInput5_5(); // SOLVED
+	result &= TestInput5_6(); // SOLVED
+	result &= TestInput5_7(); // SOLVED
+	result &= TestInput5_8(); // SOLVED
+	result &= TestInput5_9(); // SOLVED
+	result &= TestInput5_10();
+
+	if (!result) PRINTMSG << "Regression";
+	return result;
+}
+
+bool CatchRegression6x6()
+{
+	bool result = true;
+
+	result &= TestInput6_1();
+	result &= TestInput6_2();
+	result &= TestInput6_3();
+	result &= TestInput6_4();
+	
+	if (!result) PRINTMSG << "Regression";
+	return result;
+}
+bool CatchRegression7x7()
+{
+	bool result = true;
+
+	result &= TestInput7_1();
+
+	if (!result) PRINTMSG << "Regression";
+	return result;
+}
+bool CatchRegression8x8()
+{
+	bool result = true;
+
+	result &= TestInput8_1();
+
+	if (!result) PRINTMSG << "Regression";
+	return result;
+}
+bool CatchRegression9x9()
+{
+	bool result = true;
+
+	if (!result) PRINTMSG << "Regression";
+	return result;
+}
+
+bool CatchRegression()
+{
+	bool result = true;
+
+	result &= CatchRegression4x4();
+	result &= CatchRegression5x5();
+	result &= CatchRegression6x6();
+	result &= CatchRegression7x7();
+	result &= CatchRegression8x8();
+	result &= CatchRegression9x9();
+
+	return result;
+}
+
 int main()
 {
 	double time_spent = 0.0;
@@ -44,24 +132,8 @@ int main()
 	bool result = true;
 	if (catchRegression)
 	{
-		result &= TestInput4_1();
+		result = CatchRegression();
 
-		result &= TestInput5_1(); // SOLVED
-		result &= TestInput5_2(); // SOLVED
-		result &= TestInput5_3(); // SOLVED
-		result &= TestInput5_4(); // SOLVED
-		result &= TestInput5_5(); // SOLVED
-		result &= TestInput5_6(); // SOLVED
-		result &= TestInput5_7(); // SOLVED
-		result &= TestInput5_8(); // SOLVED
-		result &= TestInput5_9(); // SOLVED
-		result &= TestInput5_10();
-
-		result &= TestInput6_1();
-		result &= TestInput7_1(); 
-
-		result &= TestInput8_1();
-		
 		if (result)
 			PRINTMSG << "\nALL PASS\n";
 		else
@@ -69,7 +141,7 @@ int main()
 
 	}
 	else
-		result = TestInput5_10();
+		result = TestInput9_1();
 
 	// NOT SOLVED
 	//result = TestInput5_2000();
@@ -955,3 +1027,4 @@ bool CompareBoxes(BOX_ATTR* boxA, BOX_ATTR* boxB, GLOBALS* g)
 	}
 	return identical;
 }
+

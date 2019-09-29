@@ -1,6 +1,6 @@
 #pragma once
 
-#define PRINTBOXATTRdbg true
+#define PRINTBOXATTRdbg false
 #if PRINTBOXATTRdbg
 #define PrintBoxAttrFormatted PrintBoxAttrFormattedfn
 #else
@@ -86,3 +86,10 @@ int MinPossible(int*, int);
 bool CheckSolution(GLOBALS*);
 bool FindPairsAndUpdateBoxattr(GLOBALS*);
 bool CompareBoxes(BOX_ATTR*, BOX_ATTR*, GLOBALS*);
+bool CatchRegression();
+bool CatchRegression4x4();
+bool CatchRegression5x5();
+bool CatchRegression6x6();
+bool CatchRegression7x7();
+bool CatchRegression8x8();
+bool CatchRegression9x9();

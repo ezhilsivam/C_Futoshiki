@@ -210,6 +210,28 @@ bool TestInput5_9()
 	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 5);
 }
 
+bool TestInput5_10()
+{
+	int Numeral_Inputs[] = { 0, 1, 0, 0, 5,
+							 0, 0, 0, 0, 0,
+							 0, 0, 0, 0, 0,
+							 0, 0, 0, 0, 0,
+							 1, 0, 0, 3, 0 };
+
+	char betweenColsChar[] = { '.', '.', '<', '.',
+							   '.', '.', '.', '.',
+							   '.', '.', '.', '.',
+							   '.', '.', '.', '.',
+							   '.', '.', '.', '.' };
+
+	char betweenRowsChar[] = { '.', '.', 'v', '.', '.',
+							   '.', '.', '.', '.', '^',
+							   '.', 'v', '.', 'v', '.',
+							   '.', 'v', '.', '.', '.' };
+
+	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 5);
+}
+
 bool TestInput5_2000()
 {
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 3,
