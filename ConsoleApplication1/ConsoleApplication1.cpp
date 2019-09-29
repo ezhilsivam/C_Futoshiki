@@ -147,7 +147,7 @@ int main()
 
 	}
 	else
-		result = CatchRegression8x8();
+		result = CatchRegression9x9();
 
 	// NOT SOLVED
 	//result = TestInput5_2000();
@@ -513,29 +513,21 @@ bool violatesBetweenColRelation(GLOBALS *g, int num_row, int col, int num)
 		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).lowrow, col, g->Game_Size);
 		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).highrow, col, g->Game_Size);
 
-		if (num_row == ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).lowrow && highBox->IsFilled && highBox->value < num)
+		if ((num_row == ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).lowrow && highBox->IsFilled && highBox->value < num) ||
+			(num_row == ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).highrow && lowBox->IsFilled && lowBox->value > num))
 		{
 			return true; // violates, relation with high box
-		}
-		else if (num_row == ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).highrow && lowBox->IsFilled && lowBox->value > num)
-		{
-			return true;
 		}
 	}
 	else if (DownRowIndex != g->Game_Size && ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).isValid)
 	{
-		int lowrowIndex = ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).lowrow;
-		int highrowIndex = ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).highrow;
-		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, lowrowIndex, col, g->Game_Size);
-		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, highrowIndex, col, g->Game_Size);
+		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).lowrow, col, g->Game_Size);
+		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).highrow, col, g->Game_Size);
 
-		if (num_row == lowrowIndex && highBox->IsFilled && highBox->value < num)
+		if ((num_row == ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).lowrow && highBox->IsFilled && highBox->value < num) ||
+			(num_row == ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).highrow && lowBox->IsFilled && lowBox->value > num))
 		{
 			return true; // violates, relation with high box
-		}
-		else if (num_row == highrowIndex && lowBox->IsFilled && lowBox->value > num)
-		{
-			return true;
 		}
 	}
 
@@ -673,7 +665,7 @@ void BacktrackingAlgo(GLOBALS* g)
 {
 	// Copy input Numerals to NumeralsWithAttr
 	InitializeNumAttrArray(g);
-	PrintNumeralAttributefn(g);
+	//PrintNumeralAttributefn(g);
 
 	BackTrackAndFill(g);
 
