@@ -44,10 +44,22 @@ bool TestInput6_10();
 
 bool TestInput7x7();
 bool TestInput7_1();
+bool TestInput7_2();
+bool TestInput7_3();
+bool TestInput7_4();
+bool TestInput7_5();
+bool TestInput7_6();
+bool TestInput7_7();
+bool TestInput7_8();
+bool TestInput7_9();
+bool TestInput7_10();
+bool TestInput7_11();
+bool TestInput7_12();
 
 bool TestInput8x8();
 bool TestInput8_1();
 
 bool TestInput9x9();
 bool TestInput9_1();
+bool TestInput9_2();
 

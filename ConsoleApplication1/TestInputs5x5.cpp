@@ -26,6 +26,7 @@ bool TestInput5x5()
 
 bool TestInput5_1()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 1, 3, 4, 2, 5,
 							 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0,
@@ -46,6 +47,7 @@ bool TestInput5_1()
 }
 bool TestInput5_2()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 0, 0, 1, 0,
 							 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0,
@@ -54,11 +56,11 @@ bool TestInput5_2()
 
 	char betweenColsChar[] = { '<', '.', '.', '.',
 							   '.', '.', '>', '.',
-							   '>', '.', '>', '.',
+							   '>', '.', '.', '.',
 							   '.', '.', '.', '.',
 							   '>', '.', '.', '<' };
 
-	char betweenRowsChar[] = { '.', '.', 'v', '.', '.',
+	char betweenRowsChar[] = {  '.', '.', 'v', '.', '.',
 								'.', '.', '.', '.', '.',
 								'.', '.', '.', '^', '.',
 								'.', '.', '.', '.', '.' };
@@ -66,6 +68,7 @@ bool TestInput5_2()
 }
 bool TestInput5_3()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 2, 0, 3, 0,
 							 0, 1, 0, 2, 0,
 							 5, 0, 0, 0, 2,
@@ -86,6 +89,7 @@ bool TestInput5_3()
 }
 bool TestInput5_4()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0,
 							 0, 0, 0, 5, 0,
 							 0, 0, 0, 0, 0,
@@ -106,6 +110,7 @@ bool TestInput5_4()
 }
 bool TestInput5_5()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0,
 							 4, 5, 0, 3, 2,
 							 0, 4, 0, 5, 0,
@@ -126,6 +131,7 @@ bool TestInput5_5()
 }
 bool TestInput5_6()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 3, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0,
@@ -146,6 +152,7 @@ bool TestInput5_6()
 }
 bool TestInput5_7()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0,
 							 3, 0, 5, 0, 0,
 							 0, 0, 0, 0, 0,
@@ -166,6 +173,7 @@ bool TestInput5_7()
 }
 bool TestInput5_8()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 3, 5, 1, 0,
 							 0, 2, 0, 5, 0,
 							 0, 0, 0, 0, 0,
@@ -191,6 +199,7 @@ bool TestInput5_8()
 }
 bool TestInput5_9()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0,
 							 5, 1, 0, 2, 3,
 							 1, 0, 0, 0, 4,
@@ -209,9 +218,9 @@ bool TestInput5_9()
 							   '.', '.', '.', '.', '.' };
 	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 5);
 }
-
 bool TestInput5_10()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 1, 0, 0, 5,
 							 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0,
@@ -234,6 +243,7 @@ bool TestInput5_10()
 
 bool TestInput5_2000()
 {
+	PRINTMSG << "\n";
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 3,
 							 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0,
@@ -254,5 +264,6 @@ bool TestInput5_2000()
 }
 bool UserInput()
 {
+	PRINTMSG << "\n";
 	return SolveFutoshiki(nullptr, nullptr, nullptr, 0);
 }

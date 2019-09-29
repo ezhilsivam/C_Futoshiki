@@ -39,7 +39,6 @@ bool TestInput4_1()
 
 	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 4);
 }
-
 bool TestInput4_2()
 {
 	int Numeral_Inputs[] = { 0, 0, 0, 0,
@@ -148,7 +147,6 @@ bool TestInput4_7()
 
 	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 4);
 }
-
 bool TestInput4_8()
 {
 	int Numeral_Inputs[] = { 4, 0, 0, 0,
@@ -167,7 +165,6 @@ bool TestInput4_8()
 
 	return SolveFutoshiki(Numeral_Inputs, betweenColsChar, betweenRowsChar, 4);
 }
-
 bool TestInput4_9()
 {
 	int Numeral_Inputs[] = { 0, 0, 0, 0,

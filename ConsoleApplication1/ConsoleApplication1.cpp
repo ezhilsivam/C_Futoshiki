@@ -66,6 +66,7 @@ bool CatchRegression5x5()
 	result &= TestInput5_8(); // SOLVED
 	result &= TestInput5_9(); // SOLVED
 	result &= TestInput5_10();
+	result &= TestInput5_2000();
 
 	if (!result) PRINTMSG << "Regression";
 	return result;
@@ -88,6 +89,8 @@ bool CatchRegression7x7()
 	bool result = true;
 
 	result &= TestInput7_1();
+	result &= TestInput7_2();
+	result &= TestInput7_3();
 
 	if (!result) PRINTMSG << "Regression";
 	return result;
@@ -104,6 +107,9 @@ bool CatchRegression8x8()
 bool CatchRegression9x9()
 {
 	bool result = true;
+
+	result &= TestInput9_1();
+	//result &= TestInput9_2();
 
 	if (!result) PRINTMSG << "Regression";
 	return result;
@@ -141,10 +147,11 @@ int main()
 
 	}
 	else
-		result = TestInput9_1();
+		result = CatchRegression8x8();
 
 	// NOT SOLVED
 	//result = TestInput5_2000();
+	//result = TestInput9_1();
 
 	clock_t end = clock();
 
@@ -166,6 +173,7 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 		PRINTMSG << "Game Size: ";
 		SCAN >> g.Game_Size;
 		Total_Boxes = g.Game_Size * g.Game_Size;
+		g.Total_Boxes = Total_Boxes;
 
 		// Allocate memory for input array
 		g.Numeral_Inputs = (int*)malloc(Total_Boxes * sizeof(int));
@@ -193,6 +201,7 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 		g.Numeral_Inputs = Numeral_Input_fromOutside;
 		g.Game_Size = Test_game_size;
 		Total_Boxes = g.Game_Size * g.Game_Size;
+		g.Total_Boxes = Total_Boxes;
 
 		g.RowSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
 		memset(g.RowSolvedCount, 0, g.Game_Size * sizeof(int));
@@ -328,75 +337,454 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 
 	PrintBoxAttrFormatted(&g, true);
 
-	static int LoopCount = 0;
-	bool repeat = false;
-	do {
-		PRINTMSG << "LoopCount:" << ++LoopCount << "\n";
-		repeat = false;
-		if (UpdateBoxAttrNumerals(&g))
-		{
-			PrintBoxAttrFormatted(&g, true);
-			PrintNumeralFormatted(&g);
-			repeat = true;
-		}
-		if (UpdateBoxAttrWithRowRelations(&g))
-		{
-			if (g.NumeralUpdateNeeded)
-			{
-				UpdateBoxAttrNumerals(&g);
-			}
-			g.NumeralUpdateNeeded = false;
-			PrintBoxAttrFormatted(&g, true);
-			PrintNumeralFormatted(&g);
-			repeat = true;
-		}
-		if (UpdateBoxAttrWithColRelations(&g))
-		{
-			if (g.NumeralUpdateNeeded)
-			{
-				UpdateBoxAttrNumerals(&g);
-			}
-			g.NumeralUpdateNeeded = false;
-			PrintBoxAttrFormatted(&g, true);
-			PrintNumeralFormatted(&g);
-			repeat = true;
-		}
-		if (FindNumeralsWithOnlyPossiblePosition(&g))
-		{
-			if (g.NumeralUpdateNeeded)
-			{
-				UpdateBoxAttrNumerals(&g);
-			}
-			g.NumeralUpdateNeeded = false;
-			PrintBoxAttrFormatted(&g, true);
-			PrintNumeralFormatted(&g);
-			repeat = true;
-		}
-		if (FindPairsAndUpdateBoxattr(&g))
-		{
-			if (g.NumeralUpdateNeeded)
-			{
-				UpdateBoxAttrNumerals(&g);
-				g.NumeralUpdateNeeded = false;
-			}
-			PrintBoxAttrFormatted(&g, true);
-			PrintNumeralFormatted(&g);
-			repeat = true;
-		}
+	//ManualAlgo(&g);
 
-	} while (repeat);
+	BacktrackingAlgo(&g);
 
 	bool sol = CheckSolution(&g);
 
 	if (sol)
-		PrintNumeralFormattedfn(&g);
+	{
+		PrintNumeralAttributefn(&g);
+		//PrintNumeralFormattedfn(&g);
+	}
 	else
-		PrintBoxAttrFormattedfn(&g, true);
+	{
+		PrintNumeralAttributefn(&g);
+		//PrintBoxAttrFormattedfn(&g, true);
+	}
 
 	if (sol) PRINT << "* * * * * *\n" << "S O L V E D\n" << "* * * * * *\n";
 	else PRINT << "- - - - - - - -\n" << "NOT S O L V E D\n" << "- - - - - - - - \n";
 
 	return sol;
+}
+
+void InitializeNumAttrArray(GLOBALS *g)
+{
+	g->numAttr = (NUM_ATTR*)malloc(g->Game_Size * g->Game_Size * sizeof(NUM_ATTR));
+	memset(g->numAttr, 0, g->Game_Size * g->Game_Size * sizeof(NUM_ATTR));
+
+	for (int row = 0; row < g->Game_Size; row++)
+	{
+		for (int col = 0; col < g->Game_Size; col++)
+		{
+			if (ARRAY2D(g->Numeral_Inputs, row, col, g->Game_Size) != 0)
+			{
+				ARRAY2D(g->numAttr, row, col, g->Game_Size).value = ARRAY2D(g->Numeral_Inputs, row, col, g->Game_Size);
+				ARRAY2D(g->numAttr, row, col, g->Game_Size).IsUserIp = true;
+				ARRAY2D(g->numAttr, row, col, g->Game_Size).IsFilled = true;
+			}
+
+		}
+	}
+}
+
+bool BackTrackAndFill(GLOBALS* g)
+{
+	static int EntryCount = 0;
+	if (++EntryCount % 10000000 == 0)
+		PRINT << ++EntryCount << " ";
+	for (int row = 0; row < g->Game_Size; row++)
+	{
+		for (int col = 0; col < g->Game_Size; col++)
+		{
+			if (ARRAY2D(g->numAttr, row, col, g->Game_Size).value == 0)
+			{
+				for (int number = 1; number <= g->Game_Size; number++)
+				{
+					if (isAllowed(g, row, col, number))
+					{
+						ARRAY2D(g->numAttr, row, col, g->Game_Size).value = number;
+						ARRAY2D(g->numAttr, row, col, g->Game_Size).IsFilled = true;
+						//PrintNumeralAttributefn(g);
+
+						if (BackTrackAndFill(g))
+						{
+							return true;
+						}
+						else
+						{
+							ARRAY2D(g->numAttr, row, col, g->Game_Size).value = 0;
+							ARRAY2D(g->numAttr, row, col, g->Game_Size).IsFilled = false;
+						}
+					}
+				}
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool isAllowed(GLOBALS* g, int row, int col, int number)
+{
+	return (!containsInCol(g, col, number) && 
+			!containsInRow(g, row, number) && 
+			!violatesBetweenColRelation(g, row, col, number) && 
+			!violatesBetweenRowRelation(g, row, col, number));
+}
+
+bool BackTrackAndFill2(GLOBALS *g, int startIndex)
+{
+	if (startIndex == g->Total_Boxes)
+	{
+		// All boxes completed
+		return true;
+	}
+
+	int row = startIndex / g->Game_Size;
+	int col = startIndex % g->Game_Size;
+
+	if (ARRAY2D(g->numAttr, row, col, g->Game_Size).IsUserIp)
+	{
+
+	}
+
+	for (int pos = 1; pos <= g->Game_Size; pos++)
+	{
+		bool restriction = false;
+
+		ARRAY2D(g->numAttr, row, col, g->Game_Size).value = pos;
+		ARRAY2D(g->numAttr, row, col, g->Game_Size).IsFilled = true;
+
+		// Validate Current Values 
+		if (!restriction) // All conditions pass
+		{
+			if (BackTrackAndFill2(g, startIndex + 1))
+				return true;
+			else
+			{
+				// Retract to 
+				ARRAY2D(g->numAttr, row, col, g->Game_Size).value = 0;
+				ARRAY2D(g->numAttr, row, col, g->Game_Size).value = false;
+				continue;
+			}
+		}
+		else 
+		{
+			// Retract to 
+			ARRAY2D(g->numAttr, row, col, g->Game_Size).value = 0;
+			ARRAY2D(g->numAttr, row, col, g->Game_Size).value = false;
+			continue;
+		}
+	}
+
+	return false;
+}
+
+bool containsInRow(GLOBALS *g, int row, int num)
+{
+	bool contains= false;
+	for (int col = 0; col < g->Game_Size; col++)
+	{
+		if (ARRAY2D(g->numAttr, row, col, g->Game_Size).value == num)
+		{
+			return true;
+		}
+	}
+	return contains;
+}
+
+bool containsInCol(GLOBALS *g, int col, int num)
+{
+	bool contains = false;
+	for (int row = 0; row < g->Game_Size; row++)
+	{
+		if (ARRAY2D(g->numAttr, row, col, g->Game_Size).value == num)
+		{
+			return true;
+		}
+	}
+	return contains;
+}
+
+bool violatesBetweenColRelation(GLOBALS *g, int num_row, int col, int num)
+{
+	int rowsize = g->Game_Size - 1;
+	int colsize = g->Game_Size;
+	bool modified = false;
+
+	int UpRowIndex = num_row - 1;
+	int DownRowIndex = num_row;
+
+	if (UpRowIndex >= 0 && ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).isValid)
+	{
+		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).lowrow, col, g->Game_Size);
+		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).highrow, col, g->Game_Size);
+
+		if (num_row == ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).lowrow && highBox->IsFilled && highBox->value < num)
+		{
+			return true; // violates, relation with high box
+		}
+		else if (num_row == ARRAY2D(g->betweenRows, UpRowIndex, col, colsize).highrow && lowBox->IsFilled && lowBox->value > num)
+		{
+			return true;
+		}
+	}
+	else if (DownRowIndex != g->Game_Size && ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).isValid)
+	{
+		int lowrowIndex = ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).lowrow;
+		int highrowIndex = ARRAY2D(g->betweenRows, DownRowIndex, col, colsize).highrow;
+		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, lowrowIndex, col, g->Game_Size);
+		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, highrowIndex, col, g->Game_Size);
+
+		if (num_row == lowrowIndex && highBox->IsFilled && highBox->value < num)
+		{
+			return true; // violates, relation with high box
+		}
+		else if (num_row == highrowIndex && lowBox->IsFilled && lowBox->value > num)
+		{
+			return true;
+		}
+	}
+
+	/*for (int row = 0; row < rowsize; row++) {
+		if (ARRAY2D(g->betweenRows, row, col, colsize).isValid)
+		{
+			int lowrowIndex = ARRAY2D(g->betweenRows, row, col, colsize).lowrow;
+			int highrowIndex = ARRAY2D(g->betweenRows, row, col, colsize).highrow;
+			NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, lowrowIndex, col, g->Game_Size);
+			NUM_ATTR *highBox = &ARRAY2D(g->numAttr, highrowIndex, col, g->Game_Size);
+
+			if (num_row == lowrowIndex)
+			{
+				if (highBox->IsFilled)
+				{
+					if (highBox->value > num)
+					{
+						return false; // agrees, relation with high box
+					}
+					return true; // violates relation with high box
+				}
+				return false;
+			}
+			else if (num_row == highrowIndex)
+			{
+				if (lowBox->IsFilled)
+				{
+					if (lowBox->value < num)
+					{
+						return false;
+					}
+					return true;
+				}
+				return false;
+			}
+
+		}
+	}*/
+	return false;
+}
+
+bool violatesBetweenRowRelation(GLOBALS *g, int row, int num_col, int num)
+{
+	int rowsize = g->Game_Size;
+	int colsize = g->Game_Size - 1;
+
+	int leftColIndex = num_col - 1;
+	int rightColIndex = num_col;
+
+	if (leftColIndex >= 0 && ARRAY2D(g->betweenColumns, row, leftColIndex, colsize).isValid)
+	{
+		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, row, ARRAY2D(g->betweenColumns, row, leftColIndex, colsize).lowcol, g->Game_Size);
+		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, row, ARRAY2D(g->betweenColumns, row, leftColIndex, colsize).highcol, g->Game_Size);
+
+		if ((num_col == ARRAY2D(g->betweenColumns, row, leftColIndex, colsize).lowcol && 
+			highBox->IsFilled && 
+			highBox->value < num) || 
+				(num_col == ARRAY2D(g->betweenColumns, row, leftColIndex, colsize).highcol &&
+				lowBox->IsFilled &&
+				lowBox->value > num))
+		{
+			return true;
+		}
+	}
+	else if (rightColIndex != g->Game_Size && ARRAY2D(g->betweenColumns, row, rightColIndex, colsize).isValid)
+	{
+		NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, row, ARRAY2D(g->betweenColumns, row, rightColIndex, colsize).lowcol, g->Game_Size);
+		NUM_ATTR *highBox = &ARRAY2D(g->numAttr, row, ARRAY2D(g->betweenColumns, row, rightColIndex, colsize).highcol, g->Game_Size);
+
+		if ((num_col == ARRAY2D(g->betweenColumns, row, rightColIndex, colsize).lowcol && 
+			highBox->IsFilled && 
+			highBox->value < num) || 
+				(num_col == ARRAY2D(g->betweenColumns, row, rightColIndex, colsize).highcol &&
+				lowBox->IsFilled &&
+				lowBox->value > num))
+		{
+			return true; // violates, relation with high box
+		}
+	}
+
+	/*for (int col = 0; col < colsize; col++) {
+		if (ARRAY2D(g->betweenColumns, row, col, colsize).isValid)
+		{
+			int lowColIndex = ARRAY2D(g->betweenColumns, row, col, colsize).lowcol;
+			int highColIndex = ARRAY2D(g->betweenColumns, row, col, colsize).highcol;
+			NUM_ATTR *lowBox = &ARRAY2D(g->numAttr, row, lowColIndex, g->Game_Size);
+			NUM_ATTR *highBox = &ARRAY2D(g->numAttr, row, highColIndex, g->Game_Size);
+
+			if (num_col == lowColIndex)
+			{
+				if (highBox->IsFilled)
+				{
+					if (highBox->value > num)
+					{
+						return false; // agrees, relation with high box
+					}
+					return true; // violates relation with high box
+				}
+				return false; // high box is not filled, so proceed
+			}
+			else if (num_col == highColIndex)
+			{
+				if (lowBox->IsFilled)
+				{
+					if (lowBox->value < num)
+					{
+						return false;
+					}
+					return true;
+				}
+				return false;
+			}
+		}
+	}*/
+	
+
+	return false;
+}
+
+void CopyNumAttrToNumeralInput(GLOBALS *g)
+{
+	for (int row = 0; row < g->Game_Size; row++)
+	{
+		for (int col = 0; col < g->Game_Size; col++)
+		{
+			if (!ARRAY2D(g->numAttr, row, col, g->Game_Size).IsUserIp && ARRAY2D(g->numAttr, row, col, g->Game_Size).IsFilled)
+			{
+				ARRAY2D(g->Numeral_Inputs, row, col, g->Game_Size) = ARRAY2D(g->numAttr, row, col, g->Game_Size).value;
+			}
+		}
+	}
+}
+
+void BacktrackingAlgo(GLOBALS* g)
+{
+	// Copy input Numerals to NumeralsWithAttr
+	InitializeNumAttrArray(g);
+	PrintNumeralAttributefn(g);
+
+	BackTrackAndFill(g);
+
+	CopyNumAttrToNumeralInput(g);
+
+	//PrintNumeralAttributefn(g);
+}
+
+void PrintNumeralAttributefn(GLOBALS* g)
+{
+	PRINT << "\n\n";
+	for (int row = 0; row < g->Game_Size; row++) {
+		for (int col = 0; col < g->Game_Size; col++) {
+			PRINT << " _ _ " << " ";
+		}
+		PRINT << "\n";
+		for (int col = 0; col < g->Game_Size; col++) {
+			int num = ARRAY2D(g->numAttr, row, col, g->Game_Size).value;
+			PRINT << "| ";
+			if (num) PRINT << num;
+			else
+			{
+				if (ARRAY2D(g->numAttr, row, col, g->Game_Size).IsUserIp)
+					PRINT << ".";
+				else
+					PRINT << " ";
+			}
+
+			PRINT << " |";
+			if (col != g->Game_Size - 1)
+			{
+				char rel = ARRAY2D(g->betweenColumns, row, col, g->Game_Size - 1).isValid ? ARRAY2D(g->betweenColumns, row, col, g->Game_Size - 1).splChar : ' ';
+				PRINT << rel;
+			}
+		}
+		PRINT << "\n";
+		for (int col = 0; col < g->Game_Size; col++) {
+			PRINT << "|_ _|" << " ";
+		}
+		PRINT << "\n";
+
+		for (int col = 0; col < g->Game_Size; col++) {
+			if (row != g->Game_Size - 1)
+			{
+				char rel = ARRAY2D(g->betweenRows, row, col, g->Game_Size).isValid ? ARRAY2D(g->betweenRows, row, col, g->Game_Size).splChar : ' ';
+				PRINT << "  " << rel << "  " << " ";
+			}
+		}
+		PRINT << "\n";
+	}
+}
+
+void ManualAlgo(GLOBALS *g)
+{
+	static int LoopCount = 0;
+	bool repeat = false;
+	do {
+		PRINTMSG << "LoopCount:" << ++LoopCount << "\n";
+		repeat = false;
+		if (UpdateBoxAttrNumerals(g))
+		{
+			PrintBoxAttrFormatted(g, true);
+			PrintNumeralFormatted(g);
+			repeat = true;
+		}
+		if (UpdateBoxAttrWithRowRelations(g))
+		{
+			if (g->NumeralUpdateNeeded)
+			{
+				UpdateBoxAttrNumerals(g);
+			}
+			g->NumeralUpdateNeeded = false;
+			PrintBoxAttrFormatted(g, true);
+			PrintNumeralFormatted(g);
+			repeat = true;
+		}
+		if (UpdateBoxAttrWithColRelations(g))
+		{
+			if (g->NumeralUpdateNeeded)
+			{
+				UpdateBoxAttrNumerals(g);
+			}
+			g->NumeralUpdateNeeded = false;
+			PrintBoxAttrFormatted(g, true);
+			PrintNumeralFormatted(g);
+			repeat = true;
+		}
+		if (FindNumeralsWithOnlyPossiblePosition(g))
+		{
+			if (g->NumeralUpdateNeeded)
+			{
+				UpdateBoxAttrNumerals(g);
+			}
+			g->NumeralUpdateNeeded = false;
+			PrintBoxAttrFormatted(g, true);
+			PrintNumeralFormatted(g);
+			repeat = true;
+		}
+		if (FindPairsAndUpdateBoxattr(g))
+		{
+			if (g->NumeralUpdateNeeded)
+			{
+				UpdateBoxAttrNumerals(g);
+				g->NumeralUpdateNeeded = false;
+			}
+			PrintBoxAttrFormatted(g, true);
+			PrintNumeralFormatted(g);
+			repeat = true;
+		}
+
+	} while (repeat);
 }
 
 void PrintBoxAttrFormattedfn(GLOBALS* g, bool PrintSplchar)

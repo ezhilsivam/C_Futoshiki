@@ -35,6 +35,12 @@ typedef struct {
 	bool boxAttrUpdated;
 }BOX_ATTR;
 
+typedef struct{
+	int value;
+	bool IsUserIp;
+	bool IsFilled;
+}NUM_ATTR;
+
 typedef struct {
 	bool isValid;
 	char splChar;
@@ -65,7 +71,9 @@ typedef struct {
 	BOX_ATTR *boxattr;
 	BOX_RELATIONS *betweenRows, *betweenColumns;
 	int Game_Size;
+	int Total_Boxes;
 	bool NumeralUpdateNeeded;
+	NUM_ATTR *numAttr;
 }GLOBALS;
 
 void PrintBoxAttrFormattedfn(GLOBALS*, bool);
@@ -93,3 +101,18 @@ bool CatchRegression6x6();
 bool CatchRegression7x7();
 bool CatchRegression8x8();
 bool CatchRegression9x9();
+
+void ManualAlgo(GLOBALS *g);
+void BacktrackingAlgo(GLOBALS * g);
+
+void InitializeNumAttrArray(GLOBALS *g);
+bool BackTrackAndFill(GLOBALS *g);
+bool BackTrackAndFill2(GLOBALS *g, int startIndex);
+void PrintNumeralAttributefn(GLOBALS *);
+
+bool containsInRow(GLOBALS *g, int row, int num);
+bool containsInCol(GLOBALS *g, int col, int num);
+bool violatesBetweenColRelation(GLOBALS *g, int row, int col, int num);
+bool violatesBetweenRowRelation(GLOBALS *g, int row, int col, int num);
+bool isAllowed(GLOBALS* g, int row, int col, int number);
+void CopyNumAttrToNumeralInput(GLOBALS *g);
