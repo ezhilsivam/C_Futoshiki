@@ -147,7 +147,7 @@ int main()
 
 	}
 	else
-		result = CatchRegression9x9();
+		result = TestInput5_2000();
 
 	// NOT SOLVED
 	//result = TestInput5_2000();
@@ -337,11 +337,14 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 
 	PrintBoxAttrFormatted(&g, true);
 
-	//ManualAlgo(&g);
-
-	BacktrackingAlgo(&g);
+	ManualAlgo(&g);
 
 	bool sol = CheckSolution(&g);
+
+	if (!sol)
+		BacktrackingAlgo(&g);
+
+	sol = CheckSolution(&g);
 
 	if (sol)
 	{
@@ -663,6 +666,7 @@ void CopyNumAttrToNumeralInput(GLOBALS *g)
 
 void BacktrackingAlgo(GLOBALS* g)
 {
+	PRINTMSG << "Try BackTracking\n";
 	// Copy input Numerals to NumeralsWithAttr
 	InitializeNumAttrArray(g);
 	//PrintNumeralAttributefn(g);
