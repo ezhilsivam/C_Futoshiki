@@ -55,8 +55,12 @@ int main()
 		result &= TestInput5_7(); // SOLVED
 		result &= TestInput5_8(); // SOLVED
 		result &= TestInput5_9(); // SOLVED
+		result &= TestInput5_10();
 
+		result &= TestInput6_1();
 		result &= TestInput7_1(); 
+
+		result &= TestInput8_1();
 		
 		if (result)
 			PRINTMSG << "\nALL PASS\n";
@@ -65,11 +69,10 @@ int main()
 
 	}
 	else
-		result = TestInput8_1();
+		result = TestInput5_10();
 
 	// NOT SOLVED
 	//result = TestInput5_2000();
-	//result = TestInput6_1();
 
 	clock_t end = clock();
 
@@ -293,6 +296,17 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 				UpdateBoxAttrNumerals(&g);
 			}
 			g.NumeralUpdateNeeded = false;
+			PrintBoxAttrFormatted(&g, true);
+			PrintNumeralFormatted(&g);
+			repeat = true;
+		}
+		if (FindPairsAndUpdateBoxattr(&g))
+		{
+			if (g.NumeralUpdateNeeded)
+			{
+				UpdateBoxAttrNumerals(&g);
+				g.NumeralUpdateNeeded = false;
+			}
 			PrintBoxAttrFormatted(&g, true);
 			PrintNumeralFormatted(&g);
 			repeat = true;
@@ -781,4 +795,163 @@ void UpdateNumeralsInputArrayBoxAttr(GLOBALS* g, int row, int col, int foundNum)
 			ARRAY2D(g->boxattr, row, col, g->Game_Size).box_possible[i] = 0;
 		}
 	}
+	UpdateNumeralsInputArray(g, row, col);
+}
+
+bool FindPairsAndUpdateBoxattr(GLOBALS* g)
+{
+	static int EntryCount = 0;
+	PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
+
+	bool modified = false;
+	int MaxExpectedCount = 2;
+	
+	int* IndicesWithExpCount = (int*)malloc(g->Game_Size * sizeof(int));
+	
+	for (int row = 0; row < g->Game_Size; row++)
+	{
+		// Step 1: Find unsolved Boxes with MaxExpected Count (<=)
+		memset(IndicesWithExpCount, 0, g->Game_Size * sizeof(int));
+		int colsCount = 0;
+		bool foundIdenticalBoxeswithCount2 = false;
+		if ((g->Game_Size - g->ColSolvedCount[row]) > MaxExpectedCount)
+		{
+			for (int col = 0; col < g->Game_Size; col++)
+			{
+				int BoxattrCount = ARRAY2D(g->boxattr, row, col, g->Game_Size).count;
+
+				if (BoxattrCount != 1 && BoxattrCount <= MaxExpectedCount)
+				{
+					IndicesWithExpCount[colsCount++] = col;
+				}
+			}
+
+			// Step 2: Iterate through all the boxes in the current row to find identical boxes
+			for (int h = 0; h < colsCount; h++)
+			{
+				BOX_ATTR* PivotBox = &ARRAY2D(g->boxattr, row, IndicesWithExpCount[h], g->Game_Size);
+
+				for (int f = h+1 ; f < colsCount; f++)
+				{
+					BOX_ATTR *SecondBox = &ARRAY2D(g->boxattr, row, IndicesWithExpCount[f], g->Game_Size);
+
+					foundIdenticalBoxeswithCount2 = CompareBoxes(PivotBox, SecondBox, g);
+
+					if (foundIdenticalBoxeswithCount2)
+					{
+						for (int w = 0; w < g->Game_Size; w++)
+						{
+							int poss_num = PivotBox->box_possible[w];
+							if (poss_num != 0)
+							{
+								// Remove Poss_num from boxattr box_possible from other boxes
+								for (int c = 0; c < g->Game_Size; c++)
+								{
+									if (c != IndicesWithExpCount[h] && c != IndicesWithExpCount[f])
+									{
+										BOX_ATTR *CurrBox = &ARRAY2D(g->boxattr, row, c, g->Game_Size);
+										if (CurrBox->count != 1) {
+											modified |= RemoveNumeralFromPossibleList(CurrBox, poss_num);
+											if (CurrBox->count == 1) {
+												//PRINTMSG << "COUNT=1::" << row << " " << highColIndex << "\n";
+												UpdateNumeralsInputArray(g, row, c);
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+				if (foundIdenticalBoxeswithCount2) {
+					foundIdenticalBoxeswithCount2 = false;
+					break;
+				}
+
+			}
+		}
+	}
+
+	for (int col = 0; col < g->Game_Size; col++)
+	{
+		// Step 1: Find unsolved Boxes with MaxExpected Count (<=)
+		memset(IndicesWithExpCount, 0, g->Game_Size * sizeof(int));
+		int rowsCount = 0;
+		bool foundIdenticalBoxeswithCount2 = false;
+		if ((g->Game_Size - g->RowSolvedCount[col]) > MaxExpectedCount)
+		{
+			for (int row = 0; row < g->Game_Size; row++)
+			{
+				int BoxattrCount = ARRAY2D(g->boxattr, row, col, g->Game_Size).count;
+
+				if (BoxattrCount != 1 && BoxattrCount <= MaxExpectedCount)
+				{
+					IndicesWithExpCount[rowsCount++] = row;
+				}
+			}
+
+			// Step 2: Iterate through all the boxes in the current col to find identical boxes
+			for (int h = 0; h < rowsCount; h++)
+			{
+				BOX_ATTR* PivotBox = &ARRAY2D(g->boxattr, IndicesWithExpCount[h], col, g->Game_Size);
+
+				for (int f = h + 1; f < rowsCount; f++)
+				{
+					BOX_ATTR *SecondBox = &ARRAY2D(g->boxattr, IndicesWithExpCount[f], col, g->Game_Size);
+
+					foundIdenticalBoxeswithCount2 = CompareBoxes(PivotBox, SecondBox, g);
+
+					if (foundIdenticalBoxeswithCount2)
+					{
+						for (int w = 0; w < g->Game_Size; w++)
+						{
+							int poss_num = PivotBox->box_possible[w];
+							if (poss_num != 0)
+							{
+								// Remove Poss_num from boxattr box_possible from other boxes
+								for (int r = 0; r < g->Game_Size; r++)
+								{
+									if (r != IndicesWithExpCount[h] && r != IndicesWithExpCount[f])
+									{
+										BOX_ATTR *CurrBox = &ARRAY2D(g->boxattr, r, col, g->Game_Size);
+										if (CurrBox->count != 1)
+										{
+											modified |= RemoveNumeralFromPossibleList(CurrBox, poss_num);
+											if (CurrBox->count == 1) {
+												//PRINTMSG << "COUNT=1::" << row << " " << highColIndex << "\n";
+												UpdateNumeralsInputArray(g, r, col);
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+				if (foundIdenticalBoxeswithCount2) {
+					foundIdenticalBoxeswithCount2 = false;
+					break;
+				}
+
+			}
+		}
+	}
+	if (!modified) PRINTMSG << "NOT Modified\n";
+	return modified;
+}
+
+bool CompareBoxes(BOX_ATTR* boxA, BOX_ATTR* boxB, GLOBALS* g)
+{
+	bool identical = true;
+
+	if (boxA->count == boxB->count)
+	{
+		for (int a = 0; a < g->Game_Size; a++)
+		{
+			identical &= (boxA->box_possible[a] == boxB->box_possible[a]);
+		}
+	}
+	return identical;
 }

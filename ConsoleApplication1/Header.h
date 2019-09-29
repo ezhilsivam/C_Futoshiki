@@ -1,6 +1,6 @@
 #pragma once
 
-#define PRINTBOXATTRdbg false
+#define PRINTBOXATTRdbg true
 #if PRINTBOXATTRdbg
 #define PrintBoxAttrFormatted PrintBoxAttrFormattedfn
 #else
@@ -84,3 +84,5 @@ bool FindNumeralsWithOnlyPossiblePosition(GLOBALS*);
 int MinPossible(int*, int);
 int MinPossible(int*, int);
 bool CheckSolution(GLOBALS*);
+bool FindPairsAndUpdateBoxattr(GLOBALS*);
+bool CompareBoxes(BOX_ATTR*, BOX_ATTR*, GLOBALS*);
