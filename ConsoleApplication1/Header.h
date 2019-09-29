@@ -107,7 +107,6 @@ void BacktrackingAlgo(GLOBALS * g);
 
 void InitializeNumAttrArray(GLOBALS *g);
 bool BackTrackAndFill(GLOBALS *g);
-bool BackTrackAndFill2(GLOBALS *g, int startIndex);
 void PrintNumeralAttributefn(GLOBALS *);
 
 bool containsInRow(GLOBALS *g, int row, int num);
@@ -116,3 +115,4 @@ bool violatesBetweenColRelation(GLOBALS *g, int row, int col, int num);
 bool violatesBetweenRowRelation(GLOBALS *g, int row, int col, int num);
 bool isAllowed(GLOBALS* g, int row, int col, int number);
 void CopyNumAttrToNumeralInput(GLOBALS *g);
+bool isPossibleNumber(GLOBALS *g, int row, int col, int number);

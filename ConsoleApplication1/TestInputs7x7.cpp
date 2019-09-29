@@ -4,6 +4,7 @@
 
 bool TestInput7x7()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -33,6 +34,7 @@ bool TestInput7x7()
 
 bool TestInput7_1()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 3, 0, 0, 0, 5, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 4, 5, 0, 0, 0, 2, 7,
@@ -61,6 +63,7 @@ bool TestInput7_1()
 }
 bool TestInput7_2()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 7, 0, 0, 0, 0, 0,
 							 0, 0, 6, 0, 0, 0, 4,
@@ -89,6 +92,7 @@ bool TestInput7_2()
 }
 bool TestInput7_3()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 3, 6, 0, 1, 4, 0,
 							 2, 0, 0, 0, 0, 0, 7,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -117,6 +121,7 @@ bool TestInput7_3()
 }
 bool TestInput7_4()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -145,6 +150,7 @@ bool TestInput7_4()
 }
 bool TestInput7_5()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -173,6 +179,7 @@ bool TestInput7_5()
 }
 bool TestInput7_6()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -201,6 +208,7 @@ bool TestInput7_6()
 }
 bool TestInput7_7()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -229,6 +237,7 @@ bool TestInput7_7()
 }
 bool TestInput7_8()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -257,6 +266,7 @@ bool TestInput7_8()
 }
 bool TestInput7_9()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -285,6 +295,7 @@ bool TestInput7_9()
 }
 bool TestInput7_10()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -313,6 +324,7 @@ bool TestInput7_10()
 }
 bool TestInput7_11()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
@@ -341,6 +353,7 @@ bool TestInput7_11()
 }
 bool TestInput7_12()
 {
+	PRINTMSG;
 	int Numeral_Inputs[] = { 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,
 							 0, 0, 0, 0, 0, 0, 0,

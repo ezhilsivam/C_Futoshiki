@@ -57,9 +57,12 @@ bool TestInput7_11();
 bool TestInput7_12();
 
 bool TestInput8x8();
-bool TestInput8_1();
+bool TestInput8_1(); 
+bool TestInput8_2000();
 
 bool TestInput9x9();
 bool TestInput9_1();
 bool TestInput9_2();
+
+bool TestInput9_2000();
 

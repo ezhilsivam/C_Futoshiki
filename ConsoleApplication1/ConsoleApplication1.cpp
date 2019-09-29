@@ -52,7 +52,6 @@ bool CatchRegression4x4()
 	if (!result) PRINTMSG << "Regression";
 	return result;
 }
-
 bool CatchRegression5x5()
 {
 	bool result = true;
@@ -71,7 +70,6 @@ bool CatchRegression5x5()
 	if (!result) PRINTMSG << "Regression";
 	return result;
 }
-
 bool CatchRegression6x6()
 {
 	bool result = true;
@@ -100,6 +98,7 @@ bool CatchRegression8x8()
 	bool result = true;
 
 	result &= TestInput8_1();
+	result &= TestInput8_2000();
 
 	if (!result) PRINTMSG << "Regression";
 	return result;
@@ -108,8 +107,9 @@ bool CatchRegression9x9()
 {
 	bool result = true;
 
-	result &= TestInput9_1();
-	//result &= TestInput9_2();
+	//result &= TestInput9_1();
+	result &= TestInput9_2();
+	result &= TestInput9_2000();
 
 	if (!result) PRINTMSG << "Regression";
 	return result;
@@ -134,7 +134,7 @@ int main()
 	double time_spent = 0.0;
 	clock_t begin = clock();
 
-	bool catchRegression = false;
+	bool catchRegression = true;
 	bool result = true;
 	if (catchRegression)
 	{
@@ -147,7 +147,7 @@ int main()
 
 	}
 	else
-		result = TestInput5_2000();
+		result = CatchRegression8x8();
 
 	// NOT SOLVED
 	//result = TestInput5_2000();
@@ -179,6 +179,9 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 		g.Numeral_Inputs = (int*)malloc(Total_Boxes * sizeof(int));
 		memset(g.Numeral_Inputs, 0, Total_Boxes * sizeof(int));
 
+		g.numAttr = (NUM_ATTR*)malloc(g.Game_Size * g.Game_Size * sizeof(NUM_ATTR));
+		memset(g.numAttr, 0, g.Game_Size * g.Game_Size * sizeof(NUM_ATTR));
+
 		g.RowSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
 		memset(g.RowSolvedCount, 0, g.Game_Size * sizeof(int));
 
@@ -195,6 +198,8 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 					num_input_error = true;
 			}
 		}
+
+		InitializeNumAttrArray(&g);
 	}
 	else
 	{
@@ -202,6 +207,11 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 		g.Game_Size = Test_game_size;
 		Total_Boxes = g.Game_Size * g.Game_Size;
 		g.Total_Boxes = Total_Boxes;
+
+		g.numAttr = (NUM_ATTR*)malloc(g.Game_Size * g.Game_Size * sizeof(NUM_ATTR));
+		memset(g.numAttr, 0, g.Game_Size * g.Game_Size * sizeof(NUM_ATTR));
+
+		InitializeNumAttrArray(&g);
 
 		g.RowSolvedCount = (int*)malloc(g.Game_Size * sizeof(int));
 		memset(g.RowSolvedCount, 0, g.Game_Size * sizeof(int));
@@ -336,13 +346,18 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 	CHECK_USER_INPUT_ERROR;
 
 	PrintBoxAttrFormatted(&g, true);
+	//PrintNumeralAttributefn(&g);
 
 	ManualAlgo(&g);
-
+	InitializeNumAttrArray(&g);
+	//PrintBoxAttrFormattedfn(&g, true);
 	bool sol = CheckSolution(&g);
 
 	if (!sol)
+	{
+		//PrintBoxAttrFormattedfn(&g, true);
 		BacktrackingAlgo(&g);
+	}
 
 	sol = CheckSolution(&g);
 
@@ -365,9 +380,6 @@ bool SolveFutoshiki(int* Numeral_Input_fromOutside, char *betweenColsChar, char*
 
 void InitializeNumAttrArray(GLOBALS *g)
 {
-	g->numAttr = (NUM_ATTR*)malloc(g->Game_Size * g->Game_Size * sizeof(NUM_ATTR));
-	memset(g->numAttr, 0, g->Game_Size * g->Game_Size * sizeof(NUM_ATTR));
-
 	for (int row = 0; row < g->Game_Size; row++)
 	{
 		for (int col = 0; col < g->Game_Size; col++)
@@ -420,60 +432,25 @@ bool BackTrackAndFill(GLOBALS* g)
 	return true;
 }
 
+bool isPossibleNumber(GLOBALS *g, int row, int col, int number)
+{
+	for (int a = 0; a < g->Game_Size; a++)
+	{
+		if (ARRAY2D(g->boxattr, row, col, g->Game_Size).box_possible[a] == number)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool isAllowed(GLOBALS* g, int row, int col, int number)
 {
-	return (!containsInCol(g, col, number) && 
+	return (isPossibleNumber(g, row, col, number) &&
+			!containsInCol(g, col, number) && 
 			!containsInRow(g, row, number) && 
 			!violatesBetweenColRelation(g, row, col, number) && 
 			!violatesBetweenRowRelation(g, row, col, number));
-}
-
-bool BackTrackAndFill2(GLOBALS *g, int startIndex)
-{
-	if (startIndex == g->Total_Boxes)
-	{
-		// All boxes completed
-		return true;
-	}
-
-	int row = startIndex / g->Game_Size;
-	int col = startIndex % g->Game_Size;
-
-	if (ARRAY2D(g->numAttr, row, col, g->Game_Size).IsUserIp)
-	{
-
-	}
-
-	for (int pos = 1; pos <= g->Game_Size; pos++)
-	{
-		bool restriction = false;
-
-		ARRAY2D(g->numAttr, row, col, g->Game_Size).value = pos;
-		ARRAY2D(g->numAttr, row, col, g->Game_Size).IsFilled = true;
-
-		// Validate Current Values 
-		if (!restriction) // All conditions pass
-		{
-			if (BackTrackAndFill2(g, startIndex + 1))
-				return true;
-			else
-			{
-				// Retract to 
-				ARRAY2D(g->numAttr, row, col, g->Game_Size).value = 0;
-				ARRAY2D(g->numAttr, row, col, g->Game_Size).value = false;
-				continue;
-			}
-		}
-		else 
-		{
-			// Retract to 
-			ARRAY2D(g->numAttr, row, col, g->Game_Size).value = 0;
-			ARRAY2D(g->numAttr, row, col, g->Game_Size).value = false;
-			continue;
-		}
-	}
-
-	return false;
 }
 
 bool containsInRow(GLOBALS *g, int row, int num)
@@ -668,7 +645,7 @@ void BacktrackingAlgo(GLOBALS* g)
 {
 	PRINTMSG << "Try BackTracking\n";
 	// Copy input Numerals to NumeralsWithAttr
-	InitializeNumAttrArray(g);
+	
 	//PrintNumeralAttributefn(g);
 
 	BackTrackAndFill(g);
@@ -727,7 +704,7 @@ void ManualAlgo(GLOBALS *g)
 	static int LoopCount = 0;
 	bool repeat = false;
 	do {
-		PRINTMSG << "LoopCount:" << ++LoopCount << "\n";
+		//PRINTMSG << "LoopCount:" << ++LoopCount << "\n";
 		repeat = false;
 		if (UpdateBoxAttrNumerals(g))
 		{
@@ -878,7 +855,7 @@ void PrintNumeralFormattedfn(GLOBALS* g)
 bool UpdateBoxAttrNumerals(GLOBALS* g)
 {
 	static int EntryCount = 0;
-	PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
+	//PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
 
 	bool modified = false;
 	bool UpdateBoxAttrNumeralsAgain = false;
@@ -934,7 +911,7 @@ bool UpdateBoxAttrNumerals(GLOBALS* g)
 		UpdateBoxAttrNumerals(g);
 	}
 	
-	if (!modified) PRINTMSG << "NOT Modified\n";
+	//if (!modified) PRINTMSG << "NOT Modified\n";
 	return modified;
 }
 
@@ -984,7 +961,7 @@ int MinPossible(int* boxPossible, int Game_Size)
 bool UpdateBoxAttrWithRowRelations(GLOBALS *g)
 {
 	static int EntryCount = 0;
-	PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
+	//PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
 
 	int rowsize = g->Game_Size;
 	int colsize = g->Game_Size - 1;
@@ -1042,14 +1019,14 @@ bool UpdateBoxAttrWithRowRelations(GLOBALS *g)
 			}
 		}
 	}
-	if (!modified) PRINTMSG << "NOT Modified\n";
+	//if (!modified) PRINTMSG << "NOT Modified\n";
 	return modified;
 }
 
 bool UpdateBoxAttrWithColRelations(GLOBALS *g)
 {
 	static int EntryCount = 0;
-	PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
+	//PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
 
 	int rowsize = g->Game_Size - 1;
 	int colsize = g->Game_Size;
@@ -1103,7 +1080,7 @@ bool UpdateBoxAttrWithColRelations(GLOBALS *g)
 			}
 		}
 	}
-	if (!modified) PRINTMSG << "NOT Modified\n";
+	//if (!modified) PRINTMSG << "NOT Modified\n";
 	return modified;
 }
 
@@ -1126,7 +1103,7 @@ bool CheckSolution(GLOBALS* g)
 bool FindNumeralsWithOnlyPossiblePosition(GLOBALS* g)
 {
 	static int EntryCount = 0;
-	PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
+	//PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
 
 	bool modified = false;
 	int foundNum = 0;
@@ -1236,7 +1213,7 @@ bool FindNumeralsWithOnlyPossiblePosition(GLOBALS* g)
 			}
 		}
 	}
-	if (!modified) PRINTMSG << "NOT Modified\n";
+	//if (!modified) PRINTMSG << "NOT Modified\n";
 	return modified;
 }
 
@@ -1257,7 +1234,7 @@ void UpdateNumeralsInputArrayBoxAttr(GLOBALS* g, int row, int col, int foundNum)
 bool FindPairsAndUpdateBoxattr(GLOBALS* g)
 {
 	static int EntryCount = 0;
-	PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
+	//PRINTMSG << "EntryCount:" << ++EntryCount << "\n";
 
 	bool modified = false;
 	int MaxExpectedCount = 2;
@@ -1394,7 +1371,7 @@ bool FindPairsAndUpdateBoxattr(GLOBALS* g)
 			}
 		}
 	}
-	if (!modified) PRINTMSG << "NOT Modified\n";
+	//if (!modified) PRINTMSG << "NOT Modified\n";
 	return modified;
 }
 
